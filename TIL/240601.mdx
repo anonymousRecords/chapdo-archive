@@ -1,0 +1,21 @@
+---
+title: '2024-06-01 TIL'
+date: '2024-06-01'
+description: '나작길 블로그 포스트 UI 수정 : prose 속성'
+tags: ['prose']
+---
+
+## 📌 나작길 블로그 포스트가 제대로 보이지 않는 이슈
+
+### [문제 상황]
+<img width="1439" alt="스크린샷 2024-06-01 오후 11 37 18" src="https://github.com/anonymousRecords/chapdo-archive/assets/97885933/2d78fa0e-0bfb-4da3-9ad1-fe83db92cf46" />
+<img width="1439" alt="스크린샷 2024-06-01 오후 11 37 26" src="https://github.com/anonymousRecords/chapdo-archive/assets/97885933/9eb4550c-c9b7-4e62-9843-55cec524113c" />
+
+위와 같이 나작길 블로그에서 포스트가 제대로 보이지 않고(글자 크기가 크고 가독성이 떨어짐) 모바일 환경에서도 제대로 보이지 않는 이슈가 발생했다.
+
+### [해결 방법]
+블로그 게시물 특성상 가독성을 높이고자 [tailwindcss-typography](https://github.com/tailwindlabs/tailwindcss-typography)를 사용하였는데,   
+type scale만 지정한 상태였다.   
+따라서 `볼드체`, `하이퍼링크` 등에도 대응할 수 있도록 속성을 추가하였다.
+
+관련 커밋 링크 : https://github.com/najakgil/najakgil-tech/commit/df67473050519e9857de89f23708532addf99401
