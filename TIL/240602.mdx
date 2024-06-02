@@ -1,0 +1,29 @@
+---
+title: '2024-06-02 TIL'
+date: '2024-06-02'
+description: '나작길 블로그 Navigation 관련 이슈 해결'
+tags: ['usePathname', 'useSearchParams']
+---
+
+## 📌 나작길 블로그 Navigation 관련 이슈 해결
+
+해당 이슈를 설명하면 다음과 같다.
+페이지 이동 시, 현재 페이지를 알려주는 방식으로 Navigation 색상을 다르게 표현하였다.
+이때 상세 페이지로 넘어갈 시 색상 적용이 되지 않는 문제가 발생하였다.
+설명하자면 '/posts'의 경우, 제대로 색상이 적용되었지만, '/posts/240602'로 넘어갈 시 색상이 적용되지 않는 문제가 발생하는 식이다.
+
+기존의 방식은 url과 navigationElement의 url의 일치 여부를 확인하여 색상을 적용하였다.
+이를 해결하기 위해, 상세 페이지로 넘어갈 시, url의 일부만 일치하면 색상을 적용하도록 수정하였다.
+덧붙이자면 포스트 페이지라면 '/posts'만 일치하면 색상을 적용하도록 수정하였다.
+
+이와 관련된 자세한 내용은 [이슈 페이지](https://github.com/najakgil/najakgil-tech/issues/2)에 기록하였다.
+
+여기서 내가 공부하고 싶은 것은 url 관련하여 Next.js에서 제공하는 hook이다.
+해당 이슈 및 Navigation 색상 적용을 위해 어떤 hook을 사용할지 고민하였다.
+
+## 📌 useParams vs usePathname vs useSearchParams
+- 위 내용을 공부하고 싶었으나 아직 진행중
+- 예전에는 useRouter를 사용했으나 app router부터 위 hook들을 사용하기 시작한듯
+- 내가 구현하고자 한 기능을 흔히 Active Link라고 부르는 것 같다.
+- 나는 이렇게 구현하고자 하였고, 다른 사람들은 어떻게 구현했는지 궁금했음.
+- 위 질문들을 [트위터](https://x.com/ARecords2022/status/1797261455265509679)에도 기록함.
