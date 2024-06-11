@@ -1,0 +1,28 @@
+---
+title: '2024-06-11 TIL'
+date: '2024-06-11'
+description: '뚜레쥬르 관리자 페이지 개발'
+tags: ['NextAuth.js']
+---
+
+## 📌 나작길 블로그 포스트 작성
+[Canvas에 대해 들어보셨는지요](https://najakgil-blog.vercel.app/posts/240611)라는 제목으로 나작길 블로그 포스트를 작성하였다.   
+Canvas API와 Canvas 라이브러리인 Fabric.js에 대해 정리하였다.
+
+## 📌 뚜레쥬르 관리자 페이지에 로그인 기능 추가
+[NextAuth.js](https://next-auth.js.org/)를 사용하여 뚜레쥬르 관리자 페이지에 로그인 기능을 추가하였다.
+
+간단하게만 작업한 내용을 복기하면,
+**1. AuthProvider**
+```
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
+  return <SessionProvider>{children}</SessionProvider>;
+}
+```
+
+SessionProvider는 클라이언트에서 사용할 수 있는 세션을 제공하는 컨텍스트이기 때문에 따로 분리하고, layout 페이지에 SessionProvider가 있는 AuthProvider를 추가하였다.
+
+**2. options & route**
+로그인 기능만 필요하기에 `CredentialsProvider`를 사용하였다.
+이 options를 route에 전달하여 로그인 페이지를 구현하였다.
+
