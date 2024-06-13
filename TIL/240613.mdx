@@ -1,0 +1,64 @@
+---
+title: "2024-06-13 TIL"
+date: "2024-06-13"
+description: "vite 리액트 프로젝트로 배포 시, 404 에러"
+tags: ["404"]
+---
+
+## 📌 vite 리액트 프로젝트로 배포 시, 404 에러
+vite로 만든 리액트 프로젝트를 배포하려고 했는데, 404 에러가 발생했다. 
+
+1.
+이유는 vite는 SPA이기 때문에, vercel을 통해서 배포할 때, `routes` 설정을 해주어야 한다.
+이는 [vercel 공식문서](https://vercel.com/docs/frameworks/vite#using-vite-to-make-spas)에서도 확인이 가능하다.
+공식문서에 말하는 해결방법으로는 `vercel.json` 파일을 만들어서 다음과 같이 설정해주면 된다.
+
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+혹은 `vite.config.js` 파일에 다음과 같이 설정해주어도 된다.
+
+```json
+{
+  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
+}
+```
+
+이렇게 설정해주면, 404 에러가 발생하지 않고, 정상적으로 배포가 된다고 말했지만, 나의 경우 계속 404 에러가 발생했다.
+
+2.
+그래서 생각한 것이 vercel 에러가 아닌, reat-router-dom의 문제일 수도 있다고 생각했다.
+나와는 살짝 상황이 다르지만, 새로고침 시 404 에러가 발생한다는 [블로그 글](https://velog.io/@adultlee/createBrowserRouter%EB%A5%BC-%ED%86%B5%ED%95%9C-Router%EA%B8%B0%EB%8A%A5-%EC%B6%94%EA%B0%80#createbrowserrouter-%EA%B2%B0%EA%B3%BC)을 보게 되었다.
+해당 글에서는, webpack에 historyApiFallback 설정을 해주어서 해당 이슈를 해결했다고 한다.
+
+하지만 나의 경우 vite를 사용하였기에 webpack 설정이 아니라 vite 설정을 해주어야 했다.
+그래서 vite.config.js 파일에 historyApiFallback 설정과 유사한 설정을 해주고자 하였다.
+
+3.
+시간이 얼마나 소요될 지 모르겠어서, createBrouserRouter 이슈라면 createBrouserRouter를 사용하는 것이 아닌, Routes를 사용하는 대안이 존재한다고 판단했다.
+따라서 Routes를 사용하는 방법으로 변경하였다.
+
+```jsx
+export const router = (
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Onboarding />} />
+        <Route path="/intro" element={<Intro />} />
+        <Route path="/home" element={<Home />} />
+      </Route>
+    </Routes>
+  </BrowserRouter>
+);
+```
+
+하지만 이슈를 해결하지 못하였다. 
+그래서 내일 다시 시도해 볼 계획이다.
