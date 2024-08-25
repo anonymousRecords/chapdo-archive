@@ -1,0 +1,35 @@
+---
+title: "2024-08-25 TIL"
+date: "2024-08-25"
+description: "Nextra NavLink"
+tags: ["nextra", "nav link", "codesandpack"]
+---
+## 📌 react-three-fiber -> codesandpack
+```
+a way of individually forcing CSB screenshot regeneration
+```
+react-three-fiber 미리보기 안 보이는 거 해결하려면, collaborator가 이야기 한 screenshot regenertaion 방법을 알아야 했다.
+
+방법은 2개 정도 생각이 났는데,
+1) 직접 trigger 구현
+2) codesandpack api 확인, 만약 없다면 문의
+
+이 정도였다.
+
+그래서 codesandpack 구경하다가 공식 문서에서 이슈를 발견했다.
+
+## 📌 하단 Nav 제대로 작동 X
+공식 문서 하단에 보면 Navigation이 존재하는데, `Introduction`, `Getting Started` 이 부분만 제대로 작동을 안 하는거다.   
+그래서 이 정도는 내가 해결할 수 있지 않을까 하는 생각에 도전했다...
+
+그런데 아무리 확인해도 저 하단 Navigation이 안 보이는거다.
+
+알고보니까 Nextra를 사용한 공식문서여서, 저 하단 Navigation이 Nextra에서 제공하는 거였다.
+이 사실을 모르고 엄청 헤맸다.
+
+그래서 작동 원리를 보니까, _meta.json을 통해 타고 타고 들어가는 구조였다. 
+이건 es-hangul도 마찬가지여서 엄청 헤매다가 덕분에 쉽게 이해할 수 있었다.
+
+## 📌 문제는 바로 Getting Started
+다른 문서와 달리 Getting Started는 이미 존재하는 특정 문서로 이동하는 거다.
+그러다보니까 순차적으로 보여야 할 prev와 next의 순서가 깨져버리는거다.
