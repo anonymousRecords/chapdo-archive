@@ -1,0 +1,67 @@
+---
+title: "2024-08-24 TIL"
+date: "2024-08-24"
+description: "Fix broken sandbox preview in react-three-fiber"
+tags: ["react-three-fiber"]
+---
+
+## 📌 Fix broken sandbox preview in react-three-fiber
+react-three-fiber 공식문서에서 예제의 미리보기가 제대로 보이지 않는 이슈를 발견해서 아래와 같이 PR을 올렸다.
+
+https://github.com/pmndrs/docs/pull/294#issue-2484586882
+
+## 📌 PR을 올리기 까지의 과정
+### docs + react-three-fiber
+보통 보면 모노레포로 core 코드와 공식 문서 코드가 함께 있는 경우가 많았는데, Poinmandres의 경우 core 코드가 있는 react-three-fiber 레포지토리에 mdx 문서를 작성하고 이를 docs 레포지토리를 통해 공식 문서를 보여주는 방식이었다.
+그래서 로컬에서 내가 생각한 방법이 제대로 해결되는게 맞는지 확인하기 위해서, docs와 react-three-fiber를 fork하고 로컬에서 dev를 켜는 시도를 했다.
+
+### dev 켜는 법을 모르겠다
+https://github.com/pmndrs/docs/blob/main/docs/getting-started/introduction.mdx
+여기 링크를 들어가보면, 방법을 알려주고 있다.
+그런데 리드미에 안 적혀있어서 처음에는 못 찾아서 엄청 헤맸다.
+
+(1) 설치
+```
+$ git clone https://github.com/pmndrs/docs.git
+$ cd docs
+$ npm ci
+```
+
+(2) node 버전 맞추기
+내 노드 버전이 `20.4.0`인데 이게 안 맞아서 `nvm use 20.10.0`을 해주어서 노드 버전을 맞추어 주었다.
+`package-lock.json`을 지워주고 `npm i`를 다시 해주었다.
+이때 변경사항은 절대 커밋에 올리지 않도록 주의!!!
+
+(3) dev 켜기
+```
+(              
+  trap 'kill -9 0' SIGINT
+
+  export _PORT=60141
+
+  export MDX=docs
+  export NEXT_PUBLIC_LIBNAME="Poimandres"
+  export NEXT_PUBLIC_LIBNAME_SHORT="pmndrs"
+  export BASE_PATH=
+  export DIST_DIR=
+  export OUTPUT=export
+  export HOME_REDIRECT=
+  export MDX_BASEURL=http://localhost:$_PORT
+  export EDIT_BASEURL="vscode://file/$MDX"
+  export NEXT_PUBLIC_URL=
+  export ICON=
+  export LOGO=gutenberg.jpg
+  export GITHUB=https://github.com/pmndrs/docs
+  export DISCORD=https://discord.com/channels/740090768164651008/1264328004172255393
+  export THEME_PRIMARY="#323e48"
+  export THEME_SCHEME="tonalSpot"
+  export THEME_CONTRAST="0"
+  export THEME_NOTE="#1f6feb"                                                                                                                                              <....
+kill: not enough arguments
+```
+
+이렇게 하면 http://localhost:3000으로 공식문서는 켜진다.
+
+(4) react-three-fiber 공식문서 켜기
+그런데 http://localhost:3000에서 react-three-fiber 공식문서를 클릭하면 배포 링크로 연결된다.
+그래서 'http://localhost:3000/getting-started/introduction' 이렇게 입력하면 켜진다.
