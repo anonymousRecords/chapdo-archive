@@ -1,0 +1,96 @@
+---
+title: "2024-08-27 TIL"
+date: "2024-08-27"
+description: "shader gradient 랜딩 페이지를 못 찾겠다"
+tags: ["shader gradient"]
+---
+
+## 📌 Shader Gradient 오픈소스 분석
+https://www.shadergradient.co/
+shader gradient라고 최근에 내가 빠진 오픈소스가 있다.
+정말 간단하게 엄청 이쁜 화면을 만들 수 있다.
+이뻐서 바로 행뚜 프로젝트에 적용시켰다.
+
+그런데 https://www.shadergradient.co/customize 페이지를 들어가보면
+모바일 사이즈일때, 도구 툴?이 제대로 보이지 않는 이슈를 발견했다.
+사실 이건 feconf가서 처음 링크 들어갔을 때 찾은 이슈이기도 하다.
+
+그래서 이걸 고치고 싶었다. 이걸 Issue로 등록할 지, 아니면 PR로 등록할 지 고민이 있었는데,
+(모바일 사이즈 크기를 정해야 하니, 디자이너분의 권한이지 않나 싶었다.)
+아무튼 저 랜딩 페이지는 애니메이션 효과들도 화려해서 우선 로컬에서라도 고쳐보고 싶어서, 코드를 분석했다.
+
+근데 web을 못 찾겠다.
+모노레포로 구성되어 있는데 내가 분석한 바로는
+app에 codesandbox에 있는 예제들이 올라와 있고
+package에 core와 저 web이 있을 거 같았다.
+
+https://github.com/ruucm/shadergradient/commit/24f7ed59f1ff019510dc91f9cb5d92cf7530bc7c
+이 커밋을 보면, web을 지운 거 같다.
+
+https://github.com/ruucm/shadergradient/blob/main/packages/shadergradient/src/store/presets.ts
+근데 이걸 보면, 랜딩 페이지에 처음 보이는 랜덤 색상들의 데이터들이 있는 걸 볼 수 있다.
+이 점에서 shadergradient 폴더가 랜딩 페이지 않을까 싶은데, package.json 보면 아래와 같다.
+
+```
+  "scripts": {
+    "build": "node esmbuild/esmbuild-render build ./src dist && tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify",
+    "render:build": "tailwindcss -i ./src/styles.css -o ./dist/styles.css --minify && node esmbuild/esmbuild-render renderBuild",
+    "render:serve": "node esmbuild/render-serve",
+    "start": "tailwindcss -i ./src/styles.css -o ./dist/styles.css && node esmbuild/esmbuild-render serve",
+    "dev": "concurrently \"tailwindcss -i ./src-dev/styles.css -o ./dist/styles.css --watch\" \"node esmbuild/esmbuild-render serve localDev\"",
+    "release": "yarn run build && mkdir -p release && cp -Rf dist release/$npm_package_name@$npm_package_version && cp -Rf hdr release/$npm_package_name@$npm_package_version",
+    "deploy": "yarn version; git push --tags; git push",
+    "clean": "rm -rf dist"
+  },
+```
+
+루트는 pnpm인데, 폴더마다 package manager가 다르다.
+이거 보면 뭔가 core 코드인가 싶으면서도, 
+https://github.com/ruucm/shadergradient/tree/main/packages/shadergradient/src-dev
+여기가 웹 같기도 한데, 도대체 page가 어디인지 모르겠다...
+
+## 📌 Shader Gradient 오픈소스 적용
+행뚜 메인 페이지와 header를 수정했다.
+https://touslesjours-admin.vercel.app/
+이쁘다. 맘에 든다.
+
+CodeRabbit한테 코드 리뷰 받고 싶어서 일부로 PR했는데 아래 코드 추가해야지 리뷰를 해준다고 한다.
+그래서 리뷰는 다음 기회에,,,
+```
+// .coderabbit.yaml
+reviews:
+  enabled: true
+  review_status: true
+  auto_review:
+    enabled: true
+    ignore_title_patterns:
+      - '^WIP:.*'
+    base_branches:
+      - main
+      - develop
+```
+
+아무튼 하고 싶은 말은 `클라이언트 컴포넌트` vs `서버 컴포넌트`이다.
+평소에 Next.js를 사용할 때 결국은 use client를 사용해야 하는 상황을 마주해서 SSR을 제대로 쓴 적이 없었다.
+그래서 뭔가 이렇게 use client 남발할 거면, 왜 쓰지? 하는 의문이 있었다.
+
+그러다가 요즘 생각한 방법은 분리다.
+행뚜 Navigation을 오늘 개발하면서 적용한건데,
+Navigation에 로그인이 있어서 session으로 로그인 여부를 확인했다.
+그리고 Navigation이 3단 바를 클릭하면 dialog가 켜지는 방식이다.(컴포넌트명 바꿔야 하나?)
+그러니까 useState로 켜지고 닫는 걸 관리했다.
+
+여기서 문제다. session은 getServerSession 때문에 서버 컴포넌트이고, useState..으로 클라이언트 컴포넌트를 사용해야 하는 거다.
+그래서 내가 택한 방식은 컴포넌트 분리이다.
+PR에도 간단하게 적어뒀는데,
+
+https://github.com/anonymousRecords/touslesjours-admin/pull/8
+```
+- 서버 컴포넌트에서는 getServerSession을 사용하여 세션 정보를 가져옴. 이 부분은 서버에서 실행되므로 클라이언트로 전송되는 JavaScript 번들 크기를 줄일 수 있음.
+- 클라이언트 컴포넌트에서는 상태 관리(useState)와 사용자 인터랙션을 처리함. 이 부분은 브라우저에서 실행됨.
+- 서버 컴포넌트에서 가져온 세션 정보를 props로 클라이언트 컴포넌트에 전달함. 이렇게 하면 클라이언트 컴포넌트에서 세션 정보를 사용할 수 있음.
+```
+
+뭔가 서버 컴포넌트랑 클라이언트 컴포넌트 장점을 모두 챙기는 느낌?
+근데 이게 한 컴포넌트마다 이렇게 나누면 일이 많아지는 느낌이기는 해서...(이정도는 감수해야하나?)
+실제로도 실무에서 이렇게 쓰나? 궁금증이 생겼다.
