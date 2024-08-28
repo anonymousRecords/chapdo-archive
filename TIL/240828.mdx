@@ -1,0 +1,66 @@
+---
+title: 'Design Engineer란 무엇일까'
+date: '2024-08-28'
+description: 'shader gradient에 대해서 조금 더 알게 됨'
+tags: ['shader gradient']
+---
+
+## 📌 Design Engineer
+요즘에 디자인 시스템에 대해 관심이 많은데, 막연한 관심이었던 거 같다는 생각이 들었다.
+한동안 내가 토이 플젝을 열심히 했을 때, 똑같은 컴포넌트를 복붙해서 쓴 적이 있었다. 그리고 프로젝트 세팅도 같은 걸 계속 반복하니까 지루함을 느낀 적도 있었다.
+아마 이런 상황에 필요했던 게, (컴포넌트에 한정 지어서) 디자인 시스템이지 않았을까 싶다.
+UX Engineer, Design Engineer에 대해서 조금 더 깊은 고찰이 필요하지 않나 싶다.
+어찌 되었든, 디자인 시스템에 대한 관심과 호기심은 나날이 더 깊어지는 거 같다.
+
+## 📌 Shader gradient에 대해 더 알게 됨
+### framer로 웹 사이트를 만들 수 있음
+customize 페이지에서 모바일 사이즈일 경우, 화면이 잘 안 보이는 걸 해결하고 싶어서 코드를 까봤다.
+그래서 거의 하루종일 까봤는데, 헤맸던 거 같다.
+진짜 웹(랜딩 페이지) 코드가 어디있는지 몰라서 커밋 기록이랑 PR 기록도 다 확인했다. 
+분명 shadergradient-v2에 https://github.com/ruucm/shadergradient/blob/main/packages/shadergradient-v2/src/consts.ts 이 코드만 봐도 웹 관련 코드들이 있어서 있을 거 같은데, 무슨 구조인지 파악을 못 했다.
+그러다가 알게 된 사실이 바로 framer로 웹 사이트를 만들 수 있다는 사실이다.
+
+customize 페이지 개발자 도구를 켜보면 `<!-- ✨ Built with Framer • https://www.framer.com/ -->`이라고 써져 있다.
+난 몰랐다. 이게 framer로 만들어졌다는 표시인줄,,,
+
+결론...! 웹(랜딩 페이지) 코드의 경우, framer로 관리되기 때문에 내가 접근할 수 없다.
+
+### package.json
+```
+  "peerDependencies": {
+    "@react-spring/three": "*",
+    "@react-three/drei": "*",
+    "@react-three/fiber": "*",
+    "react": "*",
+    "three": "0.154.0"
+  },
+```
+shader gradient 버전을 보면 three의 경우 고정이고 나머지는 자유롭다.
+그러다보니 설치할 때 충돌이 난다. 직접 다 버전을 맞춰줘야 한다.
+https://www.npmjs.com/package/three
+three도 지금 보면 버전이 0.167.1까지 나왔다.  
+그래서 왜 버전이 낮은지 궁금했다.
+새로 알게 된 사실은 framer의 의존성 때문에 맘대로 버전을 올릴 수 없다는 것이다.
+그리고 src폴더도 src-dev 폴더도 있어서 그 이유가 무엇인지 궁금했는데, 이 역시 framer와 관련되어 있었다.
+
+https://github.com/ruucm/shadergradient/blob/main/packages/shadergradient-v2/tsup.config.ts
+
+dev인지 확인하고, 8000번으로 코드를 서빙해주는 식으로 동작하는듯.
+되게 생소한 방식이어서 낯설기도 재미있어 보이기도 한다.
+그래서 다른 framer 관련 코드도 찾아보고 싶다.
+
+shader gradient는 언제봐도 이쁘다.
+
+## 📌 Shader gradient PR
+Shader Gradient에 애착은 많지만 내가 기여할 수 있는 건, install 관련 리드미 수정이었다.
+다른 오픈소스들을 봐도 @types의 경우 언급을 안 하거나 (-D로 따로 설치를 권하는 건 아예 명시가 안 되어있는듯)
+그래서 나도 아무 생각없이 복붙해서 설치했다가, -D로 옮겼다.
+```
+- 타입 정의는 실제 런타임에 필요하지 않고 개발 시에만 필요함
+- 프로덕션 빌드 크기를 줄일 수 있음
+- npm 설치 시간을 단축시킬 수 있음
+- 의존성 관리가 더 명확해짐
+```
+이걸 다 언급하려다가, 그냥 변경 사항만 요약해서 적었다.
+https://github.com/ruucm/shadergradient/pull/98
+항상 커뮤니케이션하는게 제일 어려운 듯 싶다.
